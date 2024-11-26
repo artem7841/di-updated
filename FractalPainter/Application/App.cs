@@ -18,8 +18,8 @@ internal sealed class App
     public App() : this(
         new IApiAction[]
         {
-            new DragonFractalAction(),
             new KochFractalAction(),
+            new DragonFractalAction(),
             new UpdateImageSettingsAction(),
             new GetImageSettingsAction(),
             new UpdatePaletteSettingsAction(),
