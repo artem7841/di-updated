@@ -12,6 +12,16 @@ public class WordSource : IWordSource
         string line;
         while ((line = reader.ReadLine()) != null)
         {
+            
+            if (line.Contains(' '))
+            {
+                throw new InvalidDataException($"The line in the file contains spaces");
+            }
+            
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                throw new InvalidDataException($"The line in the file is empty or contains only spaces.");
+            }
             words.Add(line);
         }
 

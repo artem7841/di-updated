@@ -36,7 +36,7 @@ namespace TagsCloudContainer
                 _wordFilter = wordFilter;
             }
         
-            public void Run(string inputFile, string outputFile, string fontStyle, Color fontColor, Color BackgroundColor)
+            public void Run(string inputFile, string outputFile, string fontStyle, Color fontColor, Color backgroundColor)
             {
                 var words = _wordSource.GetWords(inputFile);
                 words = _preprocessor.Process(words);
@@ -44,7 +44,7 @@ namespace TagsCloudContainer
                 Size size = new Size(1920, 1080);
                 
                 var wordRectangles = _cloudBuilder.BuildCloud(words, size);
-                _drawer.GenerateImage(wordRectangles.ToList(), outputFile, fontStyle, fontColor, BackgroundColor);
+                _drawer.GenerateImage(wordRectangles.ToList(), outputFile, fontStyle, fontColor, backgroundColor);
             }
         }
     }
