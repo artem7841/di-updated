@@ -2,5 +2,5 @@
 
 public interface IWordSource
 {
-    IEnumerable<string> GetWords(string path);
+    IEnumerable<string> GetWords();
 }

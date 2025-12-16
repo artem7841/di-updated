@@ -11,8 +11,9 @@ public class Tests
     [SetUp]
     public void Setup()
     {
-        _wordSource = new WordSource();
         _testDirectory = Path.Combine(Path.GetTempPath(), $"WordSourceTests_{Guid.NewGuid()}");
+        var testFile = Path.Combine(_testDirectory, "with_spaces.txt");
+        _wordSource = new WordSource(testFile);
         Directory.CreateDirectory(_testDirectory);
     }
 
@@ -22,7 +23,7 @@ public class Tests
         var testFile = Path.Combine(_testDirectory, "with_spaces.txt");
         File.WriteAllLines(testFile, new[] { "яблоко", "слива", "вишня" });
         
-        var words = _wordSource.GetWords(testFile).ToList();
+        var words = _wordSource.GetWords().ToList();
 
         words.Should().HaveCount(3);
         words.Should().Contain("яблоко");
@@ -36,7 +37,7 @@ public class Tests
         var testFile = Path.Combine(_testDirectory, "with_spaces.txt");
         File.WriteAllLines(testFile, new[] { "яблоко", "сли ва", "вишня" });
         
-        Action act = () => _wordSource.GetWords(testFile).ToList();
+        Action act = () => _wordSource.GetWords().ToList();
 
         act.Should().Throw<InvalidDataException>();
     }
@@ -47,7 +48,7 @@ public class Tests
         var testFile = Path.Combine(_testDirectory, "with_spaces.txt");
         File.WriteAllLines(testFile, new[] { "яблоко", "", "вишня" });
         
-        Action act = () => _wordSource.GetWords(testFile).ToList();
+        Action act = () => _wordSource.GetWords().ToList();
 
         act.Should().Throw<InvalidDataException>();
     }

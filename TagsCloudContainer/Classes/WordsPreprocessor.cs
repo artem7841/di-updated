@@ -1,6 +1,6 @@
 ﻿namespace TagsCloudContainer;
 
-public class WordsPreprocessor : IWordsPreprocessor
+sealed class WordsPreprocessor : IWordsPreprocessor
 {
     public IEnumerable<string> Process(IEnumerable<string> words)
     {

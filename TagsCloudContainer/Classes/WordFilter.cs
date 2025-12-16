@@ -1,8 +1,10 @@
-﻿namespace TagsCloudContainer.Classes;
+﻿using System.Collections.Frozen;
 
-public class WordFilter : IWordFilter
+namespace TagsCloudContainer.Classes;
+
+sealed class WordFilter : IWordFilter
 {
-    private string[] excludedWords = 
+    private static readonly FrozenSet<string> ExcludedWords = new[]
     {
         "на", "по", "в", "из", "с", "у", "о", "к", "от", "до", "за", "над", "под", "при", "про",
         "и", "а", "но", "или", "что", "как", "чтобы", "если", "то", "же", "ли", "ни",
@@ -17,10 +19,10 @@ public class WordFilter : IWordFilter
         "стали", "это", "того", "том", "тем", "чем", "там", "здесь", "тут", "где", "куда",
         "откуда", "когда", "почему", "зачем", "как", "сколько",
         "один", "два", "три", "четыре", "пять", "первый", "второй", "третий"
-    };
+    }.ToFrozenSet();
     
     public IEnumerable<string> Filter(IEnumerable<string> words)
     {
-        return words.Where(x => !excludedWords.Contains(x));
+        return words.Where(x => !ExcludedWords.Contains(x));
     }
 }

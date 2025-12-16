@@ -4,9 +4,15 @@ namespace TagsCloudContainer;
 
 public class WordSource : IWordSource
 {
-    public IEnumerable<string> GetWords(string path)
+    private string _filePath;
+    public WordSource(string filePath)
     {
-        using var reader = new StreamReader(path);
+        _filePath = filePath;
+    }
+
+    public IEnumerable<string> GetWords()
+    {
+        using var reader = new StreamReader(_filePath);
         List<string> words = new List<string>();
         
         string line;
@@ -24,7 +30,6 @@ public class WordSource : IWordSource
             }
             words.Add(line);
         }
-
         return words;
     }
     

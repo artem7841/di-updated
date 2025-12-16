@@ -2,11 +2,11 @@
 
 namespace TagsCloudContainer;
 
-public class WordRectangle
+public record WordRectangle
 {
-    public Rectangle Rectangle { get; set; }
-    public string Word { get; set; }
-    public int FontSize { get; set; }
+    public Rectangle Rectangle { get;  }
+    public string Word { get;  }
+    public int FontSize { get;  }
     public WordRectangle(Rectangle rectangle, string word, int fontSize)
     {
         this.Rectangle = rectangle;

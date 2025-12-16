@@ -4,19 +4,19 @@ using TagsCloudContainer;
 
 namespace TagsCloudVisualization;
 
-public class RectanglesDrawer : IImageDrawer
+sealed class RectanglesDrawer : IImageDrawer
 {
-    private Point _center;
+    private readonly Point _center;
     
     public RectanglesDrawer(Point center)
     {
-        this._center = center;
+        _center = center;
     }
     
-    public void GenerateImage(IEnumerable<WordRectangle> rectangles, string pathToSave, string fontStyle, Color fontColor, Color BackgroundColor)
+    public void GenerateImage(ImageDrawerOptions options)
     {
-        var rectanglesList = rectangles.ToList();
-        if (string.IsNullOrWhiteSpace(pathToSave))
+        var rectanglesList = options.Rectangles.ToList();
+        if (string.IsNullOrWhiteSpace(options.PathToSave))
         {
             throw new ArgumentNullException("pathToSave can not be null or empty" );
         }
@@ -31,7 +31,7 @@ public class RectanglesDrawer : IImageDrawer
         using var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
         using var graphics = Graphics.FromImage(bitmap);
         
-        graphics.Clear(BackgroundColor);
+        graphics.Clear(options.BackgroundColor);
         
         
         var offsetX = imageSize.Width / 2 - _center.X;
@@ -45,8 +45,8 @@ public class RectanglesDrawer : IImageDrawer
             string word = rectanglesList[i].Word; 
             int fontSize = rectanglesList[i].FontSize;
             
-            using var font = new Font(fontStyle, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            using var textBrush = new SolidBrush(fontColor);
+            using var font = new Font(options.FontStyle, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
+            using var textBrush = new SolidBrush(options.FontColor);
             
             SizeF textSize = graphics.MeasureString(word, font);
             
@@ -55,7 +55,7 @@ public class RectanglesDrawer : IImageDrawer
             
             graphics.DrawString(word, font, textBrush, textX, textY);
         }
-        bitmap.Save(pathToSave, ImageFormat.Png);
+        bitmap.Save(options.PathToSave, ImageFormat.Png);
     }
     
 

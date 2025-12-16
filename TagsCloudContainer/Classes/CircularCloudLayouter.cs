@@ -4,16 +4,16 @@ using TagsCloudContainer;
 
 namespace TagsCloudVisualization;
 
-class CircularCloudLayouter : ICloudLayouter
+sealed class CircularCloudLayouter : ICloudLayouter
 {
-    private readonly Point center;
-    public List<Rectangle> rectangles;
+    private readonly Point _center;
+    private List<Rectangle> _rectangles;
     private int aCoef = 30;
     
     public CircularCloudLayouter(Point center)
     {
-        this.center = center;
-        this.rectangles = new List<Rectangle>();
+        _center = center;
+        _rectangles = new List<Rectangle>();
     }
     
     public Rectangle PutNextRectangle(Size rectangleSize)
@@ -23,12 +23,12 @@ class CircularCloudLayouter : ICloudLayouter
             throw new ArgumentOutOfRangeException("rectangleSize is <= 0");
         }
         
-        var leftTopCorner = GetLeftTopCornerFromCenter(center, rectangleSize);
+        var leftTopCorner = GetLeftTopCornerFromCenter(_center, rectangleSize);
         var rectangle = new Rectangle(leftTopCorner, rectangleSize);
         
-        if (rectangles.Count == 0)
+        if (_rectangles.Count == 0)
         {
-            rectangles.Add(rectangle);
+            _rectangles.Add(rectangle);
             return rectangle;
         }
         
@@ -43,7 +43,7 @@ class CircularCloudLayouter : ICloudLayouter
         }
 
         var result = PushRectangleToCenter(rectangle);
-        rectangles.Add(result);
+        _rectangles.Add(result);
         return result;
     }
 
@@ -57,7 +57,7 @@ class CircularCloudLayouter : ICloudLayouter
 
     private bool IsIntersectingWithOtherRectangles(Rectangle rectangle)
     {
-        foreach (Rectangle otherRectangle in rectangles)
+        foreach (Rectangle otherRectangle in _rectangles)
         {
             if (otherRectangle.IntersectsWith(rectangle))
             {
@@ -72,10 +72,10 @@ class CircularCloudLayouter : ICloudLayouter
         var rectangle = rec;
         var prevX = rectangle.X;
         var prevY = rectangle.Y;
-        while (rectangle.GetCenter().X != center.X)
+        while (rectangle.GetCenter().X != _center.X)
         {
             prevX = rectangle.X;
-            if (center.X - rectangle.GetCenter().X > 0)
+            if (_center.X - rectangle.GetCenter().X > 0)
             {
                 rectangle.X++;
             }
@@ -90,10 +90,10 @@ class CircularCloudLayouter : ICloudLayouter
                 break;
             }
         }
-        while (rectangle.GetCenter().Y != center.Y)
+        while (rectangle.GetCenter().Y != _center.Y)
         {
             prevY = rectangle.Y;
-            if (center.Y - rectangle.GetCenter().Y > 0)
+            if (_center.Y - rectangle.GetCenter().Y > 0)
             {
                 rectangle.Y++;
             }
@@ -117,8 +117,8 @@ class CircularCloudLayouter : ICloudLayouter
         var cosine = Math.Cos(angleInRadians);
         var sine = Math.Sin(angleInRadians);
 
-        var x = (int)(aCoef * angleInRadians * cosine + center.X);
-        var y = (int)(aCoef * angleInRadians * sine +  center.Y);
+        var x = (int)(aCoef * angleInRadians * cosine + _center.X);
+        var y = (int)(aCoef * angleInRadians * sine +  _center.Y);
         
         return new Point(x, y);
     }

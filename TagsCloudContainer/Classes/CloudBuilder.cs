@@ -1,24 +1,28 @@
 ﻿using System.Drawing;
+using TagsCloudContainer.Extensions;
 
 namespace TagsCloudContainer;
 
-public class CloudBuilder : ICloudBuilder
+sealed class CloudBuilder : ICloudBuilder
 {
-    private readonly IWordsFrequencyCounter _wordsCounter;
     private readonly ICloudLayouter _layouter;
     private readonly IFontMeasurer _fontMeasurer; 
 
-    public CloudBuilder(IWordsFrequencyCounter wordsCounter, ICloudLayouter layouter, IFontMeasurer fontMeasurer)
+    public CloudBuilder(ICloudLayouter layouter, IFontMeasurer fontMeasurer)
     {
-        _wordsCounter = wordsCounter;
         _layouter = layouter;
         _fontMeasurer = fontMeasurer;
     }
 
     public IEnumerable<WordRectangle> BuildCloud(IEnumerable<string> words, Size size)
     {
-        var wordFreq = _wordsCounter.GetDictionary(words);
+        Dictionary<string, int> wordFreq = new();
         var rectangles = new List<WordRectangle>();
+        
+        foreach (var word in words)
+        {
+            wordFreq.Increment(word);
+        }
         
         foreach (var word in wordFreq)
         {
