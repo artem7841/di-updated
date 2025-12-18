@@ -8,12 +8,15 @@ sealed class CircularCloudLayouter : ICloudLayouter
 {
     private readonly Point _center;
     private List<Rectangle> _rectangles;
-    private int aCoef = 30;
+    private int _aCoef;
+    private int _startAngle;
     
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Size targetSize, int aCoef, int startAngle)
     {
-        _center = center;
+        _center = new Point(targetSize.Width / 2, targetSize.Height / 2);
         _rectangles = new List<Rectangle>();
+        _aCoef = aCoef;
+        _startAngle = startAngle;
     }
     
     public Rectangle PutNextRectangle(Size rectangleSize)
@@ -31,12 +34,11 @@ sealed class CircularCloudLayouter : ICloudLayouter
             _rectangles.Add(rectangle);
             return rectangle;
         }
-        
-        var angle = 180;
+
         while (IsIntersectingWithOtherRectangles(rectangle))
         {
-            angle++;
-            var nextPointOnSpiral = GetNextPointOnSpiral(angle);
+            _startAngle++;
+            var nextPointOnSpiral = GetNextPointOnSpiral(_startAngle);
             var newRecPosition = GetLeftTopCornerFromCenter(nextPointOnSpiral,  rectangleSize);
             rectangle.X = newRecPosition.X;
             rectangle.Y = newRecPosition.Y;
@@ -117,8 +119,8 @@ sealed class CircularCloudLayouter : ICloudLayouter
         var cosine = Math.Cos(angleInRadians);
         var sine = Math.Sin(angleInRadians);
 
-        var x = (int)(aCoef * angleInRadians * cosine + _center.X);
-        var y = (int)(aCoef * angleInRadians * sine +  _center.Y);
+        var x = (int)(_aCoef * angleInRadians * cosine + _center.X);
+        var y = (int)(_aCoef * angleInRadians * sine +  _center.Y);
         
         return new Point(x, y);
     }

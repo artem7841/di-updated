@@ -2,7 +2,10 @@
 
 namespace TagsCloudContainer;
 
-public interface ICloudBuilder
+public interface ICloudBuilder<T> where T : AlgorithmParameters
 {
-    IEnumerable<WordRectangle> BuildCloud(IEnumerable<string> words, Size targetSize);
+    IEnumerable<WordRectangle> BuildCloud(
+        IEnumerable<string> words, 
+        Size targetSize, 
+        T parameters);
 }

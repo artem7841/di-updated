@@ -10,10 +10,12 @@ public class integrationTests
 {
     private string _testDirectory;
     private string _debugOutputDirectory;
+    private Size _size;
     [SetUp]
     public void Setup()
     {
         _debugOutputDirectory = Directory.GetCurrentDirectory();
+        _size = new Size(800, 600);
         
         _testDirectory = Path.Combine(_debugOutputDirectory, "TestCloudImages");
         Directory.CreateDirectory(_testDirectory);
@@ -29,10 +31,10 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[] { "привет", "мир", "привет", "тест", "привет", 
             "мир", "интеграция", "тест", "облако", "тег", "облако" });
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        programService.Run(outputFile, "Arial", Color.Blue, Color.White);
+        programService.Run(outputFile, "Arial", Color.Blue, Color.White, _size);
         
         File.Exists(outputFile).Should().BeTrue();
         new FileInfo(outputFile).Length.Should().BeGreaterThan(0);
@@ -45,10 +47,10 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "styled.png");
         File.WriteAllLines(inputFile, new[] { "красный", "зеленый", "синий", "желтый", 
             "фиолетовый", "оранжевый", "розовый", "черный", "серый", "белый" });
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        programService.Run( outputFile, "Times New Roman", Color.Red, Color.LightGray);
+        programService.Run( outputFile, "Times New Roman", Color.Red, Color.LightGray, _size);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -66,10 +68,10 @@ public class integrationTests
             
         File.WriteAllLines(inputFile, lines);
 
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        programService.Run( outputFile, "Arial", Color.Black, Color.White);
+        programService.Run( outputFile, "Arial", Color.Black, Color.White, _size);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -81,10 +83,10 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[]
         { "яблоко", "сл ива", "груша" });
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        Action act = () => programService.Run(outputFile, "Arial", Color.Black, Color.White);
+        Action act = () => programService.Run(outputFile, "Arial", Color.Black, Color.White, _size);
 
         act.Should().Throw<InvalidDataException>();
     }
@@ -95,10 +97,10 @@ public class integrationTests
         var inputFile = Path.Combine(_testDirectory, "input.txt");
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[] { "test", "font" });
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        programService.Run(outputFile, "NonExistentFont123", Color.Black, Color.White);
+        programService.Run(outputFile, "NonExistentFont123", Color.Black, Color.White, _size);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -113,10 +115,10 @@ public class integrationTests
             "привет", "мир", "こんにちは", "世界",
         });
 
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
         
-        programService.Run(outputFile, "Arial", Color.Black, Color.White);
+        programService.Run(outputFile, "Arial", Color.Black, Color.White, _size);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -145,14 +147,16 @@ public class integrationTests
             
         File.WriteAllLines(inputFile, allWords);
         
-        var composition = new Composition(inputFile);
+        var composition = new Composition(inputFile, "Arial");
         var programService = composition.ProgramService;
             
         programService.Run(
             outputFile: outputFile,
             fontStyle: "Arial",
             fontColor: Color.DarkBlue,
-            backgroundColor: Color.AliceBlue);
+            backgroundColor: Color.AliceBlue,
+            size: _size
+            );
             
         File.Exists(outputFile).Should().BeTrue($"The file {outputFile} should be created");
             

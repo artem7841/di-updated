@@ -9,20 +9,21 @@ namespace TagsCloudContainer
     public partial class Composition
     {
         private static string _path;
-        public Composition(string path)
+        private static string _font;
+        public Composition(string path, string font)
         {
             _path = path;
+            _font = font;
         }
         private static void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Bind<IWordSource>().To<WordSource>(_ => new WordSource(_path))
                 .Bind<IWordsPreprocessor>().To<WordsPreprocessor>()
-                .Bind<ICloudLayouter>().To(_ => new CircularCloudLayouter(new Point(0, 0)))
-                .Bind<IFontMeasurer>().To<FontMeasurer>()
-                .Bind<ICloudBuilder>().To<CloudBuilder>()
+                .Bind<IFontMeasurer>().To(_ => new FontMeasurer(_font))
+                .Bind<ICloudBuilder<SpiralParameters>>().To<SpiralCloudBuilder>()
                 .Bind<IWordFilter>().To<WordFilter>()
-                .Bind<IImageDrawer>().To(_ => new RectanglesDrawer(new Point(0, 0)))
+                .Bind<IImageDrawer>().To(_ => new RectanglesDrawer())
                 .Bind<Program.ProgramService>().To<Program.ProgramService>()
                 .Root<Program.ProgramService>("ProgramService");
         }
