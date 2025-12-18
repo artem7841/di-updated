@@ -8,24 +8,29 @@ namespace TagsCloudContainer
 {
     public partial class Composition
     {
-        private static string _path;
-        private static string _font;
-        public Composition(string path, string font)
+        private readonly ApplicationOptions _appOptions;
+        private readonly string _excludedWordsPath;
+
+        public Composition(ApplicationOptions options, string excludedWordsPath = null)
         {
-            _path = path;
-            _font = font;
+            _appOptions = options;
+            _excludedWordsPath = excludedWordsPath;
+            Setup();
         }
-        private static void Setup()
+        
+        private void Setup()
         {
             DI.Setup(nameof(Composition))
-                .Bind<IWordSource>().To<WordSource>(_ => new WordSource(_path))
-                .Bind<IWordsPreprocessor>().To<WordsPreprocessor>()
-                .Bind<IFontMeasurer>().To(_ => new FontMeasurer(_font))
-                .Bind<ICloudBuilder<SpiralParameters>>().To<SpiralCloudBuilder>()
-                .Bind<IWordFilter>().To<WordFilter>()
+                .Bind<ApplicationOptions>().To(_ => _appOptions)
+                .Bind<IWordSource>().To<WordSource>(_ => new WordSource(_appOptions.InputFile))
+                .Bind<IFontMeasurer>().To(_ => new FontMeasurer(_appOptions.Font))
                 .Bind<IImageDrawer>().To(_ => new RectanglesDrawer())
-                .Bind<Program.ProgramService>().To<Program.ProgramService>()
-                .Root<Program.ProgramService>("ProgramService");
+                .Bind<IWordsPreprocessor>().To<WordsPreprocessor>()
+                .Bind<ICloudBuilder<SpiralParameters>>().To<SpiralCloudBuilder>()
+                .Bind<IWordFilter>().To(_ => new CustomizableWordFilter(_excludedWordsPath))
+                .Bind<CliProgram.ProgramService>().To<CliProgram.ProgramService>()
+                .Bind<ICloudApplication>().To<CloudApplication>()
+                .Root<ICloudApplication>("CloudApplication");
         }
     }
 }

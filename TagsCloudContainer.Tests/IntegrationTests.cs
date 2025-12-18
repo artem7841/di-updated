@@ -23,6 +23,25 @@ public class integrationTests
         Console.WriteLine($"Test directory: {_testDirectory}");
         Console.WriteLine($"Debug output directory: {_debugOutputDirectory}");
     }
+    
+    private ApplicationOptions CreateTestOptions(string inputFile, string outputFile)
+    {
+        return new ApplicationOptions
+        {
+            InputFile = inputFile,
+            OutputFile = outputFile,
+            Size = _size,
+            Font = "Arial",
+            FontColor = Color.Black,
+            BackgroundColor = Color.White,
+            Algorithm = "spiral",
+            AlgorithmParameters = new Dictionary<string, object>
+            {
+                ["SpiralCoefficient"] = 3,
+                ["StartAngle"] = 0
+            }
+        };
+    }
 
     [Test]
     public void Program_ValidInputFile_CreatesImageFile()
@@ -31,10 +50,11 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[] { "привет", "мир", "привет", "тест", "привет", 
             "мир", "интеграция", "тест", "облако", "тег", "облако" });
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
+        var options = CreateTestOptions(inputFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
         
-        programService.Run(outputFile, "Arial", Color.Blue, Color.White, _size);
+        cloudApp.Run(options);
         
         File.Exists(outputFile).Should().BeTrue();
         new FileInfo(outputFile).Length.Should().BeGreaterThan(0);
@@ -47,10 +67,26 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "styled.png");
         File.WriteAllLines(inputFile, new[] { "красный", "зеленый", "синий", "желтый", 
             "фиолетовый", "оранжевый", "розовый", "черный", "серый", "белый" });
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
+        var options = new ApplicationOptions
+        {
+            InputFile = inputFile,
+            OutputFile = outputFile,
+            Size = _size,
+            Font = "Times New Roman",
+            FontColor = Color.Red,
+            BackgroundColor = Color.LightGray,
+            Algorithm = "spiral",
+            AlgorithmParameters = new Dictionary<string, object>
+            {
+                ["SpiralCoefficient"] = 3,
+                ["StartAngle"] = 0
+            }
+        };
         
-        programService.Run( outputFile, "Times New Roman", Color.Red, Color.LightGray, _size);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+        
+        cloudApp.Run(options);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -68,10 +104,11 @@ public class integrationTests
             
         File.WriteAllLines(inputFile, lines);
 
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
-        
-        programService.Run( outputFile, "Arial", Color.Black, Color.White, _size);
+        var options = CreateTestOptions(inputFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+
+        cloudApp.Run(options);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -83,10 +120,11 @@ public class integrationTests
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[]
         { "яблоко", "сл ива", "груша" });
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
+        var options = CreateTestOptions(inputFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
         
-        Action act = () => programService.Run(outputFile, "Arial", Color.Black, Color.White, _size);
+        Action act = () => cloudApp.Run(options);
 
         act.Should().Throw<InvalidDataException>();
     }
@@ -97,10 +135,26 @@ public class integrationTests
         var inputFile = Path.Combine(_testDirectory, "input.txt");
         var outputFile = Path.Combine(_testDirectory, "output.png");
         File.WriteAllLines(inputFile, new[] { "test", "font" });
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
+        var options = new ApplicationOptions
+        {
+            InputFile = inputFile,
+            OutputFile = outputFile,
+            Size = _size,
+            Font = "Font123", 
+            FontColor = Color.Black,
+            BackgroundColor = Color.White,
+            Algorithm = "spiral",
+            AlgorithmParameters = new Dictionary<string, object>
+            {
+                ["SpiralCoefficient"] = 3,
+                ["StartAngle"] = 0
+            }
+        };
         
-        programService.Run(outputFile, "NonExistentFont123", Color.Black, Color.White, _size);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+        
+        cloudApp.Run(options);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -115,10 +169,11 @@ public class integrationTests
             "привет", "мир", "こんにちは", "世界",
         });
 
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
-        
-        programService.Run(outputFile, "Arial", Color.Black, Color.White, _size);
+        var options = CreateTestOptions(inputFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+
+        cloudApp.Run(options);
         
         File.Exists(outputFile).Should().BeTrue();
     }
@@ -147,16 +202,26 @@ public class integrationTests
             
         File.WriteAllLines(inputFile, allWords);
         
-        var composition = new Composition(inputFile, "Arial");
-        var programService = composition.ProgramService;
+        var options = new ApplicationOptions
+        {
+            InputFile = inputFile,
+            OutputFile = outputFile,
+            Size = _size,
+            Font = "Arial",
+            FontColor = Color.DarkBlue,
+            BackgroundColor = Color.AliceBlue,
+            Algorithm = "spiral",
+            AlgorithmParameters = new Dictionary<string, object>
+            {
+                ["SpiralCoefficient"] = 3,
+                ["StartAngle"] = 0
+            }
+        };
+        
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
             
-        programService.Run(
-            outputFile: outputFile,
-            fontStyle: "Arial",
-            fontColor: Color.DarkBlue,
-            backgroundColor: Color.AliceBlue,
-            size: _size
-            );
+        cloudApp.Run(options);
             
         File.Exists(outputFile).Should().BeTrue($"The file {outputFile} should be created");
             
@@ -171,4 +236,21 @@ public class integrationTests
             linesFromFile.Should().Contain(word, $"The file must contain the word '{word}'");
         }
     }    
+    
+    [Test]
+    public void Program_EmptyInputFile_CreatesEmptyImage()
+    {
+        var inputFile = Path.Combine(_testDirectory, "empty.txt");
+        var outputFile = Path.Combine(_testDirectory, "empty_output.png");
+        
+        File.WriteAllText(inputFile, string.Empty); 
+        
+        var options = CreateTestOptions(inputFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+        
+        var act = () => cloudApp.Run(options);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
 }
