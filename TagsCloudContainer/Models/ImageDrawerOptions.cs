@@ -20,5 +20,6 @@ public class ImageDrawerOptions
         FontColor = fontColor;
         BackgroundColor = backgroundColor;
         Size = size;
+        
     }
 }

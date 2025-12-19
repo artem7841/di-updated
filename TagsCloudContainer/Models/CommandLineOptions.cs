@@ -38,5 +38,7 @@ public class CommandLineOptions
     [Option("no-exclude", Default = false, HelpText = "Disable word exclusion")]
     public bool NoExclude { get; set; }
 
+    [Option("color-scheme", Default = "single", HelpText = "Color scheme: single, random, gradient")]
+    public string ColorScheme { get; set; }
     
 }

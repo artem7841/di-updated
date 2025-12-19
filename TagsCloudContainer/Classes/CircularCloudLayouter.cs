@@ -1,10 +1,10 @@
 using System.Drawing;
-using System.Drawing.Imaging;
 using TagsCloudContainer;
+using TagsCloudContainer.Classes;
 
 namespace TagsCloudVisualization;
 
-sealed class CircularCloudLayouter : ICloudLayouter
+public class CircularCloudLayouter : ICloudLayouter
 {
     private readonly Point _center;
     private List<Rectangle> _rectangles;
@@ -39,7 +39,7 @@ sealed class CircularCloudLayouter : ICloudLayouter
         {
             _startAngle++;
             var nextPointOnSpiral = GetNextPointOnSpiral(_startAngle);
-            var newRecPosition = GetLeftTopCornerFromCenter(nextPointOnSpiral,  rectangleSize);
+            var newRecPosition = GetLeftTopCornerFromCenter(nextPointOnSpiral, rectangleSize);
             rectangle.X = newRecPosition.X;
             rectangle.Y = newRecPosition.Y;
         }
@@ -72,45 +72,48 @@ sealed class CircularCloudLayouter : ICloudLayouter
     private Rectangle PushRectangleToCenter(Rectangle rec)
     {
         var rectangle = rec;
-        var prevX = rectangle.X;
-        var prevY = rectangle.Y;
-        while (rectangle.GetCenter().X != _center.X)
-        {
-            prevX = rectangle.X;
-            if (_center.X - rectangle.GetCenter().X > 0)
-            {
-                rectangle.X++;
-            }
-            else
-            {
-                rectangle.X--;
-            }
-            
-            if (IsIntersectingWithOtherRectangles(rectangle))
-            {
-                rectangle.X = prevX;
-                break;
-            }
-        }
-        while (rectangle.GetCenter().Y != _center.Y)
-        {
-            prevY = rectangle.Y;
-            if (_center.Y - rectangle.GetCenter().Y > 0)
-            {
-                rectangle.Y++;
-            }
-            else
-            {
-                rectangle.Y--;
-            }
-            
-            if (IsIntersectingWithOtherRectangles(rectangle))
-            {
-                rectangle.Y = prevY;
-                break;
-            }
-        }
+        
+        MoveCoordinate(() => rectangle.GetCenter().X, _center.X, 
+            value => rectangle.X = value,
+            () => rectangle.X,
+            value => rectangle.X = value,
+            () => IsIntersectingWithOtherRectangles(rectangle));
+        
+        MoveCoordinate(() => rectangle.GetCenter().Y, _center.Y,
+            value => rectangle.Y = value,
+            () => rectangle.Y,
+            value => rectangle.Y = value,
+            () => IsIntersectingWithOtherRectangles(rectangle));
+        
         return rectangle;
+    }
+
+    private void MoveCoordinate(
+        Func<int> getCurrent,
+        int target,
+        Action<int> update,
+        Func<int> getRaw,
+        Action<int> setRaw,
+        Func<bool> collisionCheck)
+    {
+        var prev = getRaw();
+        while (getCurrent() != target)
+        {
+            prev = getRaw();
+            var direction = CreateDirection(target, getCurrent());
+            update(direction.GetNextValue(getRaw()));
+            
+            if (collisionCheck())
+            {
+                setRaw(prev);
+                break;
+            }
+        }
+    }
+
+    private IDirection CreateDirection(int target, int current)
+    {
+        return target > current ? new PositiveDirection() : new NegativeDirection();
     }
 
     private Point GetNextPointOnSpiral(double angle)
@@ -120,8 +123,10 @@ sealed class CircularCloudLayouter : ICloudLayouter
         var sine = Math.Sin(angleInRadians);
 
         var x = (int)(_aCoef * angleInRadians * cosine + _center.X);
-        var y = (int)(_aCoef * angleInRadians * sine +  _center.Y);
+        var y = (int)(_aCoef * angleInRadians * sine + _center.Y);
         
         return new Point(x, y);
     }
 }
+
+

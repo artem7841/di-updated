@@ -31,7 +31,7 @@ public class FontMeasurer : IFontMeasurer
 
         var padding = fontSize / 4;  
         var widthWithPadding = (int)Math.Ceiling(size.Width) + (padding * 2);
-        var height = (int)Math.Ceiling(size.Height);
+        var height = (int)Math.Ceiling(size.Height) ;
     
         return new Size(widthWithPadding, height);
     }

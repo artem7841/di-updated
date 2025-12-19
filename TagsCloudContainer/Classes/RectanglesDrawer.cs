@@ -6,8 +6,13 @@ namespace TagsCloudVisualization;
 
 sealed class RectanglesDrawer : IImageDrawer
 {
-    private readonly Point _center = new  Point(0, 0);
-    
+    private IColorScheme _colorScheme;
+
+    public RectanglesDrawer(IColorScheme colorScheme)
+    {
+        _colorScheme = colorScheme;
+    }
+
     public void GenerateImage(ImageDrawerOptions options)
     {
         var rectanglesList = options.Rectangles.ToList();
@@ -38,9 +43,10 @@ sealed class RectanglesDrawer : IImageDrawer
             
             string word = rectanglesList[i].Word; 
             int fontSize = rectanglesList[i].FontSize;
+            Color fontColor = _colorScheme.GetColorForWord(word, fontSize, i, rectanglesList.Count);
             
             using var font = new Font(options.FontStyle, fontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            using var textBrush = new SolidBrush(options.FontColor);
+            using var textBrush = new SolidBrush(fontColor);
             
             SizeF textSize = graphics.MeasureString(word, font);
             

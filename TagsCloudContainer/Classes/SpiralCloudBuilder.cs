@@ -31,6 +31,12 @@ public class SpiralCloudBuilder : ICloudBuilder<SpiralParameters>
             Size wordSize = _fontMeasurer.MeasureWord(word.Key, fontSize);
 
             float maxRatio = 0.5f; 
+            
+            if (wordSize.Width > targetSize.Width || wordSize.Height > targetSize.Height)
+            {
+                throw new InvalidOperationException($"Word '{word}' exceeds the image area size");
+            }
+            
             while (wordSize.Width > targetSize.Width * maxRatio || wordSize.Height > targetSize.Height * maxRatio)
             {
                 fontSize = (int)(fontSize * 0.7);

@@ -29,11 +29,10 @@ public class CloudApplication : ICloudApplication
         var words = _wordSource.GetWords();
         words = _preprocessor.Process(words);
         words = _wordFilter.Filter(words);
-        
         var parameters = options.AlgorithmParameters.ToSpiralParameters();
             
         var wordRectangles = _cloudBuilder.BuildCloud(words, options.Size, parameters);
-        ImageDrawerOptions draverOptions = new ImageDrawerOptions(
+        ImageDrawerOptions drawerOptions = new ImageDrawerOptions(
             wordRectangles, 
             options.OutputFile, 
             options.Font, 
@@ -41,6 +40,6 @@ public class CloudApplication : ICloudApplication
             options.BackgroundColor, 
             options.Size);
                 
-        _drawer.GenerateImage(draverOptions);
+        _drawer.GenerateImage(drawerOptions);
     }
 }

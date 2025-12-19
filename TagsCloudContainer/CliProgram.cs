@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
+using TagsCloudContainer.Classes;
 
 namespace TagsCloudContainer
 {
@@ -44,7 +45,9 @@ namespace TagsCloudContainer
                 
                 string filterConfig = GetFilterConfig(cliOptions);
                 
-                var composition = new Composition(appOptions, filterConfig);
+                IColorScheme colorScheme = CreateColorSchemeFromCli(cliOptions);
+                
+                var composition = new Composition(appOptions, filterConfig, colorScheme);
                 var app = composition.CloudApplication;
                 app.Run(appOptions);
         
@@ -55,6 +58,16 @@ namespace TagsCloudContainer
                 Console.WriteLine($"Error: {ex.Message}");
                 Environment.Exit(1);
             }
+        }
+        
+        private static IColorScheme CreateColorSchemeFromCli(CommandLineOptions cliOptions)
+        {
+            return cliOptions.ColorScheme?.ToLower() switch
+            {
+                "random" => new RandomColorScheme(),
+                "single" => new SingleColorScheme(ParseColor(cliOptions.FontColor)),
+                "gradient" => new GradientColorScheme(ParseColor(cliOptions.FontColor))
+            };
         }
         
         private static string GetFilterConfig(CommandLineOptions options)
@@ -69,7 +82,6 @@ namespace TagsCloudContainer
                 if (!File.Exists(options.ExcludeFile))
                 {
                     Console.WriteLine($"Warning: Exclude file '{options.ExcludeFile}' not found.");
-                    Console.ResetColor();
                     return null;
                 }
                 return options.ExcludeFile;

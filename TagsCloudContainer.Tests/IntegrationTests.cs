@@ -253,4 +253,24 @@ public class integrationTests
 
         act.Should().Throw<InvalidOperationException>();
     }
+    
+    [Test]
+    public void Program_WithNonexistentInputFile_ShouldThrowFileNotFoundException()
+    {
+        var nonexistentFile = Path.Combine(_testDirectory, "nonexistent_" + Guid.NewGuid() + ".txt");
+        var outputFile = Path.Combine(_testDirectory, "output.png");
+
+        if (File.Exists(nonexistentFile))
+        {
+            File.Delete(nonexistentFile);
+        }
+    
+        var options = CreateTestOptions(nonexistentFile, outputFile);
+        var composition = new Composition(options);
+        var cloudApp = composition.CloudApplication;
+        
+        Action act = () => cloudApp.Run(options);
+        
+        act.Should().Throw<FileNotFoundException>().WithMessage($"*{nonexistentFile}*");
+    }
 }
